@@ -1,3 +1,5 @@
+
+ 
  [ Switzerland Production ]                       [ Germany Non-Production ]
  +---------------------------+                    +---------------------------+
  |  On-Prem or Azure Cloud   |   Secure Network   |      Azure Linux VM       |

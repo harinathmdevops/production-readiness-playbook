@@ -1,9 +1,9 @@
-[ Switzerland Production ]                       [ Germany Non-Production ]
-+---------------------------+                    +---------------------------+
-|  On-Prem or Azure Cloud   |   Secure Network   |      Azure Linux VM       |
-|    MariaDB (800 GB)       |===================>|    MariaDB Target DB      |
-|  Contains Raw PII       |  (VPN / Peering)   |  Data Masked in Flight  |
-+---------------------------+                    +---------------------------+
+ [ Switzerland Production ]                       [ Germany Non-Production ]
+ +---------------------------+                    +---------------------------+
+ |  On-Prem or Azure Cloud   |   Secure Network   |      Azure Linux VM       |
+ |    MariaDB (800 GB)       |===================>|    MariaDB Target DB      |
+ |  Contains Raw PII         |  (VPN / Peering)   |    Data Masked in Flight  |
+ +---------------------------+                    +---------------------------+
 
 ### Key Prerequisites
 - **Target Storage:** The German Azure VM must have a fast-attached data disk (SSD preferred) with **at least 1.5 TB of storage** to accommodate both the raw compressed backup files and the uncompressed ingestion state.

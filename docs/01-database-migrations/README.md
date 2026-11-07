@@ -6,4 +6,11 @@ This repository provides a step-by-step framework to securely and efficiently mi
 
 ## 🛠️ Infrastructure Overview
 
+[ Switzerland Production ]                       [ Germany Non-Production ]
++---------------------------+                    +---------------------------+
+|  On-Prem or Azure Cloud   |   Secure Network   |      Azure Linux VM       |
+|    MariaDB (800 GB)       |===================>|    MariaDB Target DB      |
+|  Contains Raw PII       |  (VPN / Peering)   |  Data Masked in Flight  |
++---------------------------+                    +---------------------------+
+
 

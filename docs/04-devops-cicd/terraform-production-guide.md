@@ -276,14 +276,23 @@ import {
 # 2. Generate matching HCL configuration automatically
 terraform plan -generate-config-out=generated_resources.tf
 
+```
 
+```bash
 # 3. Review & clean up generated_resources.tf, move into main.tf, and apply
 
 terraform apply
 
+```
+
+```bash
 # 4. Remove the temporary import block once recorded in state
 
-7. Recovering from Partial Applies
+```
+
+---
+
+## 7. Recovering from Partial Applies
 
 Terraform writes to the remote state file after each individual resource finishes, not only at the end of a run.
 If terraform apply fails halfway through:
@@ -292,6 +301,8 @@ If terraform apply fails halfway through:
 3. Re-run terraform apply: Terraform skips completed resources and resumes from the failed resource.
 4. If a single resource was left in a broken state, force a clean recreation of only that resource:
    bash terraform apply -replace="RESOURCE_TYPE.RESOURCE_NAME"
+
+---
 
 
 ## 8. Troubleshooting & Runbook
@@ -303,27 +314,5 @@ If terraform apply fails halfway through:
 | Renaming a resource triggers destroy/recreate | Terraform treats a renamed resource block as a brand-new resource. | Add a `moved` block (`moved { from = old_addr to = new_addr }`) to remap the state address in-place. |
 | Provider checksum mismatch in CI | `.terraform.lock.hcl` lacks `linux_amd64` hashes for Linux CI runners. | Run `terraform providers lock -platform=linux_amd64` locally and commit the updated lockfile. |
 | Opaque Cloud API `400` or `403` error | Standard Terraform CLI output hides low-level HTTP request/response details. | Run `TF_LOG=DEBUG TF_LOG_PATH=./tf-debug.log terraform plan` locally to inspect API traces (do not commit the log file). |
-
-
-
-
-4. What Happens on a Partial terraform apply? (Do You Need to Clear Anything?)
-
-No—you do NOT roll back, delete your state file, or clear everything when terraform apply fails partway through.
-
-How Terraform Handles Partial Applies Internally
-
-• Terraform updates the state file after each individual resource finishes creating/updating, not just at the very end.
-• Suppose your plan had 5 resources: Resources 1, 2, and 3 succeed, and Resource 4 fails (for example, due to an IAM permission error or a globally taken bucket name).
-• Resources 1, 2, and 3 are already saved in terraform.tfstate. Resource 4 is not saved (or is marked as tainted if it was created in a broken state), and Resource 5 was never attempted.
-
-Step-by-Step Recovery Procedure
-
-1. Do NOT delete terraform.tfstate or manually delete Resources 1–3 (deleting the state file will orphan Resources 1–3 and cause AlreadyExists errors on your next run).
-2. Fix the root cause of Resource 4's failure (e.g., grant the missing IAM role or fix the resource name in .tf).
-3. Re-run terraform plan and terraform apply: Terraform compares your code against the updated state file, skips Resources 1–3 (No changes), and picks up right where it left off by creating Resources 4 and 5.
-4. If a resource was created in a broken/half-configured state: Use -replace on the next apply so Terraform cleanly recreates just that single broken resource:
-terraform apply -replace="google_compute_instance.broken_vm"
-
 
 

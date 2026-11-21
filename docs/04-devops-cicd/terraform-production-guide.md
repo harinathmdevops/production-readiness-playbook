@@ -294,18 +294,16 @@ If terraform apply fails halfway through:
    bash terraform apply -replace="RESOURCE_TYPE.RESOURCE_NAME"
 
 
-8. Troubleshooting & Runbook
+## 8. Troubleshooting & Runbook
 
+| Symptom / Error | Root Cause | Resolution |
+| :--- | :--- | :--- |
+| `Error acquiring the state lock` | Active CI run in progress, or a crashed runner left a stale lock behind. | Verify no CI apply job is running, then run `terraform force-unlock <LOCK_ID>` using the ID from the error output. |
+| `Resource already exists (409)` | Resource exists in the cloud, but is missing from `terraform.tfstate`. | Add an `import` block for the resource ID and run `terraform apply` to adopt it into state. |
+| Renaming a resource triggers destroy/recreate | Terraform treats a renamed resource block as a brand-new resource. | Add a `moved` block (`moved { from = old_addr to = new_addr }`) to remap the state address in-place. |
+| Provider checksum mismatch in CI | `.terraform.lock.hcl` lacks `linux_amd64` hashes for Linux CI runners. | Run `terraform providers lock -platform=linux_amd64` locally and commit the updated lockfile. |
+| Opaque Cloud API `400` or `403` error | Standard Terraform CLI output hides low-level HTTP request/response details. | Run `TF_LOG=DEBUG TF_LOG_PATH=./tf-debug.log terraform plan` locally to inspect API traces (do not commit the log file). |
 
-Symptom / Error	Root Cause	Resolution
-Error acquiring the state lock	Active CI run in progress, or a crashed runner left a stale lock behind.	Confirm no CI apply job is running, then clear the lock:
-terraform force-unlock <LOCK_ID>
-Resource already exists (409)	Resource exists in cloud, but is missing from terraform.tfstate.	Add an import block for the resource ID and run terraform apply.
-Renaming a resource triggers destroy/recreate	Terraform treats a changed resource block name as a new resource.	Add a moved block to remap state in-place:
-moved { from = old_addr to = new_addr }
-Provider checksum mismatch in CI	.terraform.lock.hcl lacks linux_amd64 hashes.	Run terraform providers lock -platform=linux_amd64 and commit the lockfile.
-Opaque Cloud API 400 / 403 error	Insufficient detail in standard Terraform CLI output.	Enable local debug logging (do not commit logs):
-TF_LOG=DEBUG TF_LOG_PATH=./tf-debug.log terraform plan
 
 
 

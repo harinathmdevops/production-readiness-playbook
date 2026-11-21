@@ -278,14 +278,11 @@ terraform plan -generate-config-out=generated_resources.tf
 
 ```
 
-```bash
+```
 # 3. Review & clean up generated_resources.tf, move into main.tf, and apply
 
 terraform apply
 
-```
-
-```bash
 # 4. Remove the temporary import block once recorded in state
 
 ```
